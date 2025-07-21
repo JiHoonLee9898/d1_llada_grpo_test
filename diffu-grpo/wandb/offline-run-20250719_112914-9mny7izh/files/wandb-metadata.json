@@ -1,0 +1,140 @@
+{
+    "os": "Linux-5.15.0-106-generic-x86_64-with-glibc2.39",
+    "python": "3.10.18",
+    "heartbeatAt": "2025-07-19T02:29:14.827391",
+    "startedAt": "2025-07-19T02:29:14.586748",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--config",
+        "slurm_scripts/train.yaml",
+        "--model_path",
+        "/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base",
+        "--num_iterations",
+        "12",
+        "--dataset",
+        "sudoku",
+        "--run_name",
+        "sudoku_base_bs12",
+        "--output_dir",
+        "checkpoints/sudoku_base_bs12",
+        "--num_train_epochs",
+        "1"
+    ],
+    "state": "running",
+    "program": "/home/work/jihoon_wombat_storage/JIHOON/d1/diffu-grpo/diffu_grpo_train.py",
+    "codePath": "diffu-grpo/diffu_grpo_train.py",
+    "git": {
+        "remote": "https://github.com/dllm-reasoning/d1.git",
+        "commit": "e20637b0cc4257bdcd00d49d3b571e55776d054f"
+    },
+    "email": "zailitol@naver.com",
+    "root": "/home/work/jihoon_wombat_storage/JIHOON/d1",
+    "host": "main1",
+    "username": "work",
+    "executable": "/home/work/miniconda3/envs/d1/bin/python",
+    "cpu_count": 16,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 2062.499875,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 3000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2000.0,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "total": 1462.412296295166,
+        "used": 748.1727409362793
+    },
+    "gpu": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA H100 80GB HBM3",
+            "memory_total": 85520809984
+        }
+    ],
+    "memory": {
+        "total": 126.0
+    }
+}
