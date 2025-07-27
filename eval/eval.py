@@ -185,14 +185,14 @@ if __name__ == "__main__":
     parser.add_argument("--checkpoint_path", type=str, default="")
     parser.add_argument("--gen_length", type=int, default=128)
     parser.add_argument("--block_length", type=int, default=32)
-    parser.add_argument("--diffusion_steps", type=int, default=64)
+    parser.add_argument("--diffusion_steps", type=int, default=128)
     parser.add_argument("--add_reasoning", action="store_true")
     parser.add_argument("--dont_save", action="store_true")
     parser.add_argument("--output_dir", type=str, default="results/")
     parser.add_argument("--dont_use_box", action="store_true")
     args = parser.parse_args()
 
-    args.diffusion_steps = args.gen_length // 2
+    # args.diffusion_steps = args.gen_length // 2
     num_evals = {"gsm8k": -1, "math": -1, "countdown": 256, "sudoku": 256}
 
     model = AutoModel.from_pretrained(args.model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(
@@ -226,18 +226,19 @@ if __name__ == "__main__":
         collate_fn=dataset.collate_fn,
     )
 
-    if len(args.checkpoint_path):
-        model_name = args.checkpoint_path.split("/")
-        model_name = model_name[-2] + "_" + model_name[-1]
-    else:
-        model_name = "instruct" if "Instruct" in args.model_path else "base"
+    # if len(args.checkpoint_path):
+    #     model_name = args.checkpoint_path.split("/")
+    #     model_name = model_name[-2] + "_" + model_name[-1]
+    # else:
+    #     model_name = "instruct" if "Instruct" in args.model_path else "base"
 
-    if args.few_shot > 0:
-        model_name = model_name + f"_fs{args.few_shot}"
+    # if args.few_shot > 0:
+    #     model_name = model_name + f"_fs{args.few_shot}"
 
-    if len(args.suffix) > 0:
-        model_name = model_name + f"_{args.suffix}"
-
+    # if len(args.suffix) > 0:
+    #     model_name = model_name + f"_{args.suffix}"
+    
+    model_name = args.model_path.split("/")[-1]
     os.makedirs(args.output_dir, exist_ok=True)
     filename = f"{args.output_dir}/{args.dataset}_{model_name}_{args.gen_length}_{args.diffusion_steps}_{dist.get_rank()}_generations.json"
     print(f"Saving generations to {filename}")
