@@ -3,7 +3,7 @@ export LOGDIR=checkpoints
 mkdir -p $LOGDIR
 
 DATASET="gsm8k"
-RUN_NAME=${DATASET}_base_bs12
+RUN_NAME=${DATASET}_20250724_numeric_exclude
 MODEL_PATH=/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base
 NUM_ITER=12 # number of policy gradient inner updates iterations
 

@@ -23,6 +23,10 @@ from trl.trainer.utils import (
 )
 import wandb
 
+
+from typing import List, Optional
+
+
 if is_peft_available():
     from peft import PeftConfig, get_peft_model
 # What we call a reward function is a callable that takes a list of prompts and completions and returns a list of
@@ -265,6 +269,46 @@ class DiffuGRPOTrainer(GRPOTrainer):
         )
 
         return noisy_batch, p_mask
+    
+    #####
+
+    def forward_process_v2(self, 
+    batch, prompt_index, mask_id, 
+    no_mask_ids: Optional[List[int]] = None, 
+    seed=None):
+        set_seed(seed)
+        b, l = batch.shape
+        t_p = torch.ones(b, device=batch.device) * self.args.p_mask_prompt
+
+        # 마스킹 금지 위치 생성
+        if no_mask_ids is not None:
+            no_mask_ids_tensor = torch.tensor(no_mask_ids, device=batch.device).view(1, 1, -1)
+            batch_expanded = batch.unsqueeze(-1)
+            is_maskable = ~(batch_expanded == no_mask_ids_tensor).any(dim=-1)  # (B, L), True if can be masked
+        else:
+            is_maskable = torch.ones_like(batch, dtype=torch.bool, device=batch.device)
+
+        # 확률적 마스킹 결정
+        random_matrix = torch.rand((b, l), device=batch.device)
+        # Prompt 부분: 마스킹 가능하고 확률 조건을 만족하는 경우에만 마스킹
+        is_mask_prompt = prompt_index & is_maskable & (random_matrix < t_p.unsqueeze(1))
+        # Completion 부분: 마스킹 가능하면 무조건 마스킹
+        is_mask_completion = (~prompt_index) & is_maskable
+        # 최종 마스킹 여부
+        is_mask = is_mask_prompt | is_mask_completion
+        # 마스킹된 배치 생성
+        noisy_batch = torch.where(is_mask, mask_id, batch)
+        # p_mask 계산 (마스킹되지 않는 토큰에 대해서는 0 확률)
+        p_mask = torch.where(
+            prompt_index,
+            t_p.unsqueeze(1),
+            torch.ones_like(t_p).unsqueeze(1),
+        )
+        p_mask = torch.where(is_maskable, p_mask, torch.zeros_like(p_mask))
+
+        return noisy_batch, p_mask
+        
+    #####
 
     def get_logits(self, model, batch, prompt_index, cfg_scale, mask_id):
         if cfg_scale > 0.0:
@@ -324,9 +368,18 @@ class DiffuGRPOTrainer(GRPOTrainer):
         all_expanded_inputs = []
         for iter_idx, mask_seed in enumerate(mask_seeds):
             expanded_input = input_ids[iter_idx]  # [batch_size, seq_len]
-            perturbed_seq, _ = self.forward_process(
-                expanded_input, prompt_index, self.args.mask_id, seed=mask_seed
+
+            # print('Using forward_process by d1')
+            # perturbed_seq, _ = self.forward_process(
+            #     expanded_input, prompt_index, self.args.mask_id, seed=mask_seed
+            # )
+            print('Using forward_process_v2 by Jihoon')
+            perturbed_seq, _ = self.forward_process_v2(
+                expanded_input, prompt_index, self.args.mask_id, 
+                no_mask_ids=[15, 24, 117, 23, 18, 19, 21, 22, 20, 110, 16, 17, 111, 47937, 7627, 103686, 2367, 57264, 3197, 48375, 8477, 31164, 7304, 20535, 7191, 1215, 1096, 105174, 27431, 421, 350, 66059, 9936, 16146, 36618, 16163, 53129, 13675, 4091, 17626, 114067, 4815, 32923, 23947, 591, 82702, 36222, 42093, 31514, 25116, 44820, 70447, 81590, 54276, 556, 1682, 6836, 49859, 24531, 10141, 49925, 95225, 8828, 103505, 119092, 111760, 23849, 69625, 2453, 65506, 125589, 12987, 3819, 109978, 61226, 43444, 90496, 111085, 1911, 7439, 63174, 9406, 121065, 7937, 51734, 35637, 2340, 89967, 20685, 58903, 66343, 47494, 3594, 96498, 3363, 46124, 33288, 82949, 13227, 19735],
+                seed=mask_seed
             )
+
             all_perturbed_seqs.append(perturbed_seq)
             all_expanded_inputs.append(expanded_input)
 
