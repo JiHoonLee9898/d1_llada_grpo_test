@@ -438,4 +438,9 @@ def aggregate_results(directory="."):
 
 
 if __name__ == "__main__":
+    aggregate_results(directory="eval_results_1epochs")
     aggregate_results(directory="eval_results_1epochs_256_128")
+    aggregate_results(directory="eval_results_jihoon")
+    aggregate_results(directory="eval_results_1epochs_20250729")
+    
+

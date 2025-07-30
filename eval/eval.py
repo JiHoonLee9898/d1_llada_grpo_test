@@ -167,12 +167,9 @@ class CustomDistributedSampler(DistributedSampler):
 
 
 if __name__ == "__main__":
-    init_seed(42)
 
     # Note: This evaluation script saves only model generations. A separate parser is used later to extract
     # predictions and calculate metrics.
-
-    local_rank = setup_ddp()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default="/data1/shared/LLaDA-8B-Instruct/")
@@ -190,8 +187,15 @@ if __name__ == "__main__":
     parser.add_argument("--dont_save", action="store_true")
     parser.add_argument("--output_dir", type=str, default="results/")
     parser.add_argument("--dont_use_box", action="store_true")
+    parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
+    init_seed(args.seed)
+    print(f'seed_num: {args.seed}')
+
+
+
+    local_rank = setup_ddp()
     # args.diffusion_steps = args.gen_length // 2
     num_evals = {"gsm8k": -1, "math": -1, "countdown": 256, "sudoku": 256}
 

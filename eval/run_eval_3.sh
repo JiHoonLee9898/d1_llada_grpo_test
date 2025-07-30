@@ -4,13 +4,13 @@
 # Configuration variables
 GPU_IDS=(0)
 
-MASTER_PORT=29415
+MASTER_PORT=29417
 
 # Arrays of tasks and generation lengths
 TASKS=("gsm8k")
 GEN_LENGTHS=(256)
 DIFF_STEPS=(128)
-MODEL_PATHS=("/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base" "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/epoch1_merged_base" "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/numeric_exclude_merged_epoch1")
+MODEL_PATHS=("/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/number_related_exclude_manually_merged_epoch1" "/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base" "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/epoch1_merged_base" "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/numeric_exclude_merged_epoch1")
 
 # Set GPU IDs from command line if provided
 if [ $# -gt 0 ]; then
@@ -46,8 +46,9 @@ for task in "${TASKS[@]}"; do
         --batch_size $batch_size \
         --gen_length $gen_length \
         --diffusion_steps $diffusion_step \
-        --output_dir "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/eval/eval_results_1epochs" \
-        --model_path $model
+        --output_dir "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/eval/eval_results_1epochs_20250729" \
+        --model_path $model \
+        --seed 42
       done
     done
   done

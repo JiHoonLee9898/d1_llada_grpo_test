@@ -5,8 +5,8 @@ import os
 
 
 base_model_path = "/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base"
-lora_adapter_path = "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/checkpoints/gsm8k_20250724_numeric_exclude/checkpoint-44800"
-merged_model_path = "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/numeric_exclude_merged_epoch1"
+lora_adapter_path = "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/checkpoints/gsm8k_20250727_number_related_tokens_exclude/checkpoint-44800"
+merged_model_path = "/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/diffu-grpo/merged_models/number_related_exclude_manually_merged_epoch1"
 modeling_llada_py_path = "/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base/modeling_llada.py"
 
 

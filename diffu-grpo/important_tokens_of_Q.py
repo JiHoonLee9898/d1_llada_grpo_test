@@ -1,33 +1,32 @@
-# import json
-# from transformers import AutoTokenizer
-# import os
+import json
+from transformers import AutoTokenizer
+import os
 
-# # 1. 토크나이저 로딩
-# tokenizer = AutoTokenizer.from_pretrained(
-#     '/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base',
-#     trust_remote_code=True
-# )
+# 1. 토크나이저 로딩
+tokenizer = AutoTokenizer.from_pretrained(
+    '/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Base',
+    trust_remote_code=True
+)
 
-# # 2. JSON 파일 로드
-# with open("/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/eval/eval_results_1epochs_256_128/gsm8k_epoch1_merged_base_256_128_0_generations.json", "r", encoding="utf-8") as f:
-#     data = json.load(f)
+# 2. JSON 파일 로드
+with open("/home/work/jihoon_wombat_storage/JIHOON/d1_jihoon/eval/eval_results_1epochs_256_128/gsm8k_epoch1_merged_base_256_128_0_generations.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
 
-# # 3. 모든 질문 뽑기
-# questions = [entry["question"] for entry in data["generations"]]
+# 3. 모든 질문 뽑기
+questions = [entry["question"] for entry in data["generations"]]
 
-# # 4. 한 질문씩 출력하는 루프
-# for i, q in enumerate(questions, 1):
-#     input("▶ Enter 키를 눌러 다음 질문을 토크나이징하세요...")
+# 4. Loop to display one question at a time
+for i, q in enumerate(questions, 1):
+    input("▶ Press Enter to tokenize the next question...")
 
-#     tokens = tokenizer.tokenize(q)
-#     token_ids = tokenizer.convert_tokens_to_ids(tokens)
+    tokens = tokenizer.tokenize(q)
+    token_ids = tokenizer.convert_tokens_to_ids(tokens)
 
-#     print(f"\n🔹 질문 {i}: {q}\n")
-#     print("🔸 토큰 및 ID:")
-#     for token, token_id in zip(tokens, token_ids):
-#         print(f"  Token: {token:<20} ID: {token_id}")
-#     print("-" * 60)
-
+    print(f"\n🔹 Question {i}: {q}\n")
+    print("🔸 Tokens and IDs:")
+    for token, token_id in zip(tokens, token_ids):
+        print(f"  Token: {token:<20} ID: {token_id}")
+    print("-" * 60)
 
 numeric_tokens_of_gsm8k_1_132 = [
     16,
