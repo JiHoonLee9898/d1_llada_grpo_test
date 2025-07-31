@@ -432,16 +432,19 @@ def aggregate_results(directory="."):
 
     # Data rows
     row_format = "{:<40} {:>11.2f}% {:>25.2f}"
+    setup_str_len = max([len(setup) for setup, results in sorted(setups.items())])
     for setup, results in sorted(setups.items()):
-        print(row_format.format(setup, results["accuracy"], results["avg_effective_tokens"]))
+        print(row_format.format(setup+" "*(setup_str_len-len(setup)), results["accuracy"], results["avg_effective_tokens"]))
 
     print("=" * 80)
 
 
 if __name__ == "__main__":
-    aggregate_results(directory="eval_results_1epochs")
-    aggregate_results(directory="eval_results_1epochs_256_128")
-    aggregate_results(directory="eval_results_jihoon")
-    aggregate_results(directory="eval_results_20250730")
-    
+    # aggregate_results(directory="eval_results_1epochs")
+    # aggregate_results(directory="eval_results_1epochs_256_128")
+    # aggregate_results(directory="eval_results_jihoon")
+    aggregate_results(directory="eval_result_20250731_base_low_confidence")
+    aggregate_results(directory="eval_result_20250731_base_topk_margin")
+    aggregate_results(directory="eval_result_20250731_instruct_low_confidence")
+    aggregate_results(directory="eval_result_20250731_instruct_topk_margin")
 
