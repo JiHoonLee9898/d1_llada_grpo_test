@@ -56,6 +56,7 @@ def evaluate(
     cfg_scale=0.0,
     steps=64,
     block_length=32,
+    decoding="",
 ):
     model.eval()
     total_processed = torch.tensor(0, device=model.device)
@@ -79,7 +80,7 @@ def evaluate(
             block_length=block_length,
             temperature=temperature,
             cfg_scale=cfg_scale,
-            remasking="low_confidence",
+            remasking=decoding,
         )
 
         generated_texts = tokenizer.batch_decode(out[:, -gen_length:], skip_special_tokens=False)
@@ -188,6 +189,8 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", type=str, default="results/")
     parser.add_argument("--dont_use_box", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--decoding", default="ddd")
+
     args = parser.parse_args()
 
     init_seed(args.seed)
@@ -244,7 +247,7 @@ if __name__ == "__main__":
     
     model_name = args.model_path.split("/")[-1]
     os.makedirs(args.output_dir, exist_ok=True)
-    filename = f"{args.output_dir}/{args.dataset}_{model_name}_{args.gen_length}_{args.diffusion_steps}_{dist.get_rank()}_generations.json"
+    filename = f"{args.output_dir}/{args.dataset}_{model_name}_dec{args.decoding}_gen{args.gen_length}_diff{args.diffusion_steps}_block{args.block_length}_rank{dist.get_rank()}_generations.json"
     print(f"Saving generations to {filename}")
 
     metrics = evaluate(
@@ -254,6 +257,7 @@ if __name__ == "__main__":
         gen_length=args.gen_length,
         block_length=args.block_length,
         steps=args.diffusion_steps,
+        decoding=args.decoding,
     )
 
     if not args.dont_save:

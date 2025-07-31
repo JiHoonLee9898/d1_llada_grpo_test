@@ -354,7 +354,8 @@ def parse_sudoku_answers(json_path=None, json_data=None):
 
 def extract_setup_name(filename):
     """Extract the setup name from the filename."""
-    match = re.match(r"(.+)_\d+_generations\.json$", filename)
+    # match = re.match(r"(.+)_\d+_generations\.json$", filename)
+    match = re.match(r"(.+)_generations\.json$", filename)
     if match:
         return match.group(1)
     return None
@@ -441,6 +442,6 @@ if __name__ == "__main__":
     aggregate_results(directory="eval_results_1epochs")
     aggregate_results(directory="eval_results_1epochs_256_128")
     aggregate_results(directory="eval_results_jihoon")
-    aggregate_results(directory="eval_results_1epochs_20250729")
+    aggregate_results(directory="eval_results_20250730")
     
 

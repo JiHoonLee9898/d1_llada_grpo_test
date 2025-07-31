@@ -1,8 +1,14 @@
-import torch
+import torch, random
 import numpy as np
 import torch.nn.functional as F
 from tqdm import tqdm
 import torch.distributed as dist
+import torch, random
+import numpy as np
+import torch.nn.functional as F
+from transformers import AutoTokenizer, AutoModel
+import math
+tokenizer = AutoTokenizer.from_pretrained('/home/work/jihoon_wombat_storage/MODELS/LLaDA-8B-Instruct', trust_remote_code=True)
 
 
 def add_gumbel_noise(logits, temperature):
@@ -69,7 +75,15 @@ def generate(
         assert gen_length % block_length == 0
         num_blocks = gen_length // block_length
         steps_per_block = max(1, steps // num_blocks)
+
+        # try:
+        #     rank = dist.get_rank()
+        # except:
+        #     rank = 0  # 분산 환경이 아니면 기본 rank=0
+        # for num_block in tqdm(range(num_blocks), disable=(rank != 0)):
+        
         for num_block in tqdm(range(num_blocks), disable=(dist.get_rank() != 0)):
+
             start_idx = prompt.shape[1] + num_block * block_length
             end_idx = prompt.shape[1] + (num_block + 1) * block_length
 
@@ -103,6 +117,10 @@ def generate(
                     x0_p = torch.gather(p, dim=-1, index=x0.unsqueeze(-1)).squeeze(-1)
                 elif remasking == "random":
                     x0_p = torch.rand(x0.shape, device=x0.device)
+                elif remasking == "top_k_margin":
+                    p = F.softmax(logits, dim=-1)  # (B, L, V)
+                    top2_probs, _ = torch.topk(p, k=2, dim=-1)  # (B, L, 2)
+                    x0_p = top2_probs[..., 0] - top2_probs[..., 1]  # (B, L)
                 else:
                     raise NotImplementedError(remasking)
 
@@ -123,7 +141,7 @@ def generate(
         
 
 
-        
+
 ####################
 # Avobe is prior code of d1, which does not allow to change "steps" for higher value than gen_length 
 #####################
@@ -327,8 +345,10 @@ def main():
     prompt = "Lily can run 12 kilometers per hour for 4 hours. After that, she runs 6 kilometers per hour. How many kilometers can she run in 8 hours?"
     prompt = "John runs 60 miles a week. He runs 3 days a week.  He runs 3 hours the first day and half as much the other two days he runs.  How fast does he run?"
     prompt = 'What is the answer of 333 * 333?'
-    
-    
+    prompt = 'A fruit vendor bought 50 watermelons for $80. He sold all of them at a profit of 25%. How much was each watermelon sold?'
+    prompt = 'The girls are trying to raise money for a carnival. Kim raises $320 more than Alexandra, who raises $430, and Maryam raises $400 more than Sarah, who raises $300. How much money, in dollars, did they all raise in total?'
+    prompt = "Kylar went to the store to buy glasses for his new apartment. One glass costs $5, but every second glass costs only 60% of the price. Kylar wants to buy 16 glasses. How much does he need to pay for them?"
+
     # Add special tokens for the Instruct model. The Base model does not require the following two lines.
     m = [{"role": "user", "content": prompt}, ]
     prompt = tokenizer.apply_chat_template(m, add_generation_prompt=True, tokenize=False)
@@ -336,9 +356,13 @@ def main():
     input_ids = tokenizer(prompt)['input_ids']
     input_ids = torch.tensor(input_ids).to(device).unsqueeze(0)
 
-    out = generate(model, input_ids, tokenizer, steps=32, gen_length=32, block_length=8, temperature=0., cfg_scale=0., remasking='low_confidence')
+    out = generate(model, input_ids, tokenizer, steps=128, gen_length=256, block_length=32, temperature=0., cfg_scale=0., remasking='low_confidence')
     print(tokenizer.batch_decode(out[:, input_ids.shape[1]:], skip_special_tokens=True)[0])
 
+    out = generate(model, input_ids, tokenizer, steps=128, gen_length=256, block_length=32, temperature=0., cfg_scale=0., remasking="top_k_margin")
+    print(tokenizer.batch_decode(out[:, input_ids.shape[1]:], skip_special_tokens=True)[0])
+
+    
 
 if __name__ == '__main__':
     main()
